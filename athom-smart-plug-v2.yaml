@@ -3,7 +3,7 @@ substitutions:
   friendly_name: "Athom Smart Plug V2"
   project_name: "athom.smart-plug-v2"
   project_version: "1.1"
-  relay_restore_mode: RESTORE_DEFAULT_OFF
+  relay_restore_mode: RESTORE_DEFAULT_ON
 
 esphome:
   name: "${device_name}"
@@ -38,7 +38,7 @@ wifi:
 captive_portal:
 
 dashboard_import:
-  package_import_url: github://athom-tech/athom-configs/athom-smart-plug-v2.yaml
+  package_import_url: github://chrisbrownie/athom-configs/athom-smart-plug-v2.yaml
 
 uart:
   rx_pin: RX
