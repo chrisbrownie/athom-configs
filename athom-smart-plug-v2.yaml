@@ -4,6 +4,7 @@ substitutions:
   project_name: "athom.smart-plug-v2"
   project_version: "1.1"
   relay_restore_mode: RESTORE_DEFAULT_ON
+  sensor_update_interval: 10s
 
 esphome:
   name: "${device_name}"
@@ -75,21 +76,29 @@ binary_sensor:
 sensor:
   - platform: uptime
     name: "${friendly_name} Uptime Sensor"
+  
+  - platform: wifi_signal
+    name: ${friendly_name} WiFi Signal"
+    update_interval: 60s
 
   - platform: cse7766
-    update_interval: 10s
     current:
       name: "${friendly_name} Current"
       filters:
-          - lambda: if (x < 0.060) return 0.0; else return x;   #For the chip will report less than 3w power when no load is connected
+        - throttle: ${sensor_update_interval}
+        - lambda: if (x < 0.060) return 0.0; else return x;   #For the chip will report less than 3w power when no load is connected
 
     voltage:
       name: "${friendly_name} Voltage"
+      filters:
+        - throttle: ${sensor_update_interval}
+
     power:
       name: "${friendly_name} Power"
       id: power_sensor
       filters:
-          - lambda: if (x < 3.0) return 0.0; else return x;    #For the chip will report less than 3w power when no load is connected
+        - throttle: ${sensor_update_interval}
+        - lambda: if (x < 3.0) return 0.0; else return x;    #For the chip will report less than 3w power when no load is connected
 
 
     energy:
@@ -97,6 +106,7 @@ sensor:
       id: energy
       unit_of_measurement: kWh
       filters:
+        - throttle: ${sensor_update_interval}
         # Multiplication factor from W to kW is 0.001
         - multiply: 0.001
       on_value:
@@ -132,6 +142,10 @@ button:
   - platform: factory_reset
     name: Restart with Factory Default Settings
     id: Reset
+  
+  - platform: safe_mode
+    name: "Safe Mode"
+    internal: false
 
 switch:
   - platform: gpio
@@ -154,6 +168,10 @@ text_sensor:
     ip_address:
       name: "${friendly_name} IP Address"
       disabled_by_default: true
+    ssid:
+      name: "${friendly_name} SSID"
+    mac_address:
+      name: "${friendly_name} MAC Address"
      
 time:
   - platform: sntp
