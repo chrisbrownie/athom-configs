@@ -1,8 +1,7 @@
 substitutions:
-  name: "athom-rgbww-light"
-  friendly_name: "Athom RGBWW Light"
-  project_name: "athom.rgbww-light"
-  project_version: "1.1"
+  device_name: "athom-rgbww-light"
+  project_name: "Athom Technology.RGBCW Bulb"
+  project_version: "1.1.1"
   light_restore_mode: RESTORE_DEFAULT_ON
   color_interlock: 'true'
 
@@ -13,8 +12,10 @@ globals:
     initial_value: '0'
 
 esphome:
-  name: "${name}"
+  name: "${device_name}"
+  friendly_name: ""
   name_add_mac_suffix: true
+  min_version: 2024.6.0
   project:
     name: "${project_name}"
     version: "${project_version}"
@@ -28,10 +29,11 @@ esp8266:
 
 preferences:
   flash_write_interval: 1min
-  
+
 api:
 
 ota:
+  - platform: esphome
 
 logger:
 
@@ -51,39 +53,56 @@ dashboard_import:
 
 binary_sensor:
   - platform: status
-    name: "${friendly_name} Status"
+    name: "Status"
 
 sensor:
   - platform: uptime
-    name: "${friendly_name} Uptime"
+    name: "Uptime Sensor"
+
+  - platform: wifi_signal
+    name: "${friendly_name} WiFi Signal"
+    update_interval: 60s
 
 button:
   - platform: factory_reset
-    name: Restart with Factory Default Settings
+    name: "Reset"
     id: Reset
+
+  - platform: safe_mode
+    name: "Safe Mode"
+    internal: false
 
 output:
   - platform: esp8266_pwm
     id: red_output
     pin: GPIO4
+    min_power: 0.000499
+    max_power: 1
   - platform: esp8266_pwm
     id: green_output
     pin: GPIO12
+    min_power: 0.000499
+    max_power: 1
   - platform: esp8266_pwm
     id: blue_output
     pin: GPIO14
+    min_power: 0.000499
+    max_power: 1
   - platform: esp8266_pwm
     id: warm_white_output
     pin: GPIO13
+    min_power: 0.000499
+    max_power: 1
   - platform: esp8266_pwm
     id: white_output
     pin: GPIO5
-
+    min_power: 0.000499
+    max_power: 1
 
 light:
   - platform: rgbww
     id: rgbww_light
-    name: "${friendly_name}"
+    name: "RGBCW_Bulb"
     restore_mode: ${light_restore_mode}
     red: red_output
     green: green_output
@@ -97,8 +116,15 @@ light:
 text_sensor:
   - platform: wifi_info
     ip_address:
-      name: "${friendly_name} IP Address"
-      disabled_by_default: true
+      name: "IP Address"
+    ssid:
+      name: "Connected SSID"
+    mac_address:
+      name: "Mac Address"
+     
+time:
+  - platform: sntp
+    id: sntp_time
 
 script:
   - id: fast_boot_script
