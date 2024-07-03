@@ -6,7 +6,7 @@ substitutions:
   device_description: "athom smart plug v2"
   project_name: "Athom Technology.Smart Plug V2"
   project_version: "2.0.3"
-  relay_restore_mode: RESTORE_DEFAULT_OFF
+  relay_restore_mode: RESTORE_DEFAULT_ON
   sensor_update_interval: 10s
   # Current Limit in Amps. AU Plug = 10. IL, BR, EU, UK, US Plug = 16.
   current_limit : "16"
@@ -16,7 +16,7 @@ substitutions:
   timezone: ""
   # Enables faster network connections, with last connected SSID being connected to and no full scan for SSID being undertaken
   wifi_fast_connect: "false" 
-  
+
 esphome:
   name: "${name}"
   friendly_name: "${friendly_name}"
@@ -56,7 +56,7 @@ wifi:
 captive_portal:
 
 dashboard_import:
-  package_import_url: github://athom-tech/athom-configs/athom-smart-plug-v2.yaml
+  package_import_url: github://chrisbrownie/athom-configs/athom-smart-plug-v2.yaml
 
 uart:
   rx_pin: RX
@@ -93,13 +93,14 @@ binary_sensor:
 
 sensor:
   - platform: uptime
-    name: "Uptime Sensor"
+
+    name: "${friendly_name} Uptime Sensor"
     id: uptime_sensor
     entity_category: diagnostic
     internal: true
 
   - platform: wifi_signal
-    name: "WiFi Signal"
+    name: "${friendly_name} WiFi Signal"
     id: wifi_signal_db
     update_interval: 60s
     entity_category: diagnostic
@@ -124,11 +125,11 @@ sensor:
         - above: ${current_limit}
           then:
             - switch.turn_off: relay
-
     voltage:
-      name: "Voltage"
+      name: "${friendly_name} Voltage"
       filters:
         - throttle_average: ${sensor_update_interval}
+
 
     power:
       name: "Power"
@@ -218,13 +219,13 @@ light:
 text_sensor:
   - platform: wifi_info
     ip_address:
-      name: "IP Address"
+      name: "${friendly_name} IP Address"
       entity_category: diagnostic
     ssid:
-      name: "Connected SSID"
+      name: "${friendly_name} SSID"
       entity_category: diagnostic
     mac_address:
-      name: "Mac Address"
+      name: "${friendly_name} MAC Address"
       entity_category: diagnostic
 
   #  Creates a sensor showing when the device was last restarted
